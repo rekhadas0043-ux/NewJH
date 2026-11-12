@@ -5,9 +5,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: |
-          ls -la
-          for z in *.zip; do unzip -o "$z" -x ".github/*"; done
+        with:
+          fetch-depth: 0
+      - name: Unzip newest zip
+        run: |
+          best=$(for z in *.zip; do echo "$(git log -1 --format=%ct -- "$z") $z"; done | sort -n | tail -1 | cut -d' ' -f2-)
+          echo "Using: $best"
+          unzip -o "$best" -x ".github/*"
           ls -la
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: 17 }
