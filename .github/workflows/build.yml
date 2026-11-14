@@ -1,24 +1,31 @@
 name: Build APK
-on: [push, workflow_dispatch]
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Unzip newest zip
-        run: |
-          best=$(for z in *.zip; do echo "$(git log -1 --format=%ct -- "$z") $z"; done | sort -n | tail -1 | cut -d' ' -f2-)
-          echo "Using: $best"
-          unzip -o "$best" -x ".github/*"
-          ls -la
+
       - uses: actions/setup-java@v4
-        with: { distribution: temurin, java-version: 17 }
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: android-actions/setup-android@v3
+
       - uses: gradle/actions/setup-gradle@v4
-        with: { gradle-version: 8.9 }
-      - run: gradle assembleDebug --no-daemon
+        with:
+          gradle-version: 8.7
+
+      - name: Build debug APK
+        run: gradle assembleDebug --no-daemon
+
       - uses: actions/upload-artifact@v4
         with:
           name: NewJH-debug
-          path: app/build/outputs/apk/debug/*.apk
+          path: app/build/outputs/apk/debug/app-debug.apk
