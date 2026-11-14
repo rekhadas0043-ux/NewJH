@@ -11,6 +11,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Unzip project
+        run: |
+          for z in *.zip; do unzip -q -o "$z"; done
+          ls
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
