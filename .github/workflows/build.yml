@@ -13,7 +13,7 @@ jobs:
 
       - name: Unzip project
         run: |
-          for z in *.zip; do unzip -q -o "$z"; done
+          ls *.zip | sort -V | while read -r z; do unzip -q -o "$z"; done
           ls
 
       - uses: actions/setup-java@v4
